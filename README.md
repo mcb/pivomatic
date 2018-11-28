@@ -1,4 +1,4 @@
-# pivomatic
+# pivomatic :beer:
 Bash Script to wrap around Pivnet CLI and OM
 
 ```bash
