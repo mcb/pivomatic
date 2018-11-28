@@ -1,0 +1,64 @@
+#!/bin/bash
+
+usage() { echo -e "Usage: $0 -t <pivnet-token> -o <opsman-url> -u <opsman-user> -p <opsman-pass> -s <product-slug> -r <release> \n" 1>&2; exit 1; }
+
+login (){
+  pivnet login --api-token="${TOKEN}"
+}
+
+om-upload () {
+  om-linux -target $OPSMAN --skip-ssl-validation -u "${USER}" -p "${PASSWD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
+}
+
+if (($# == 0))
+then
+    USAGE
+fi
+
+while getopts ":t:o:u:p:s:r:h" opt; do
+  case $opt in
+    t) TOKEN=$OPTARG
+      ;;
+    o) OPSMAN=$OPTARG
+      ;;
+    u) USER=$OPTARG
+      ;;
+    p) PASSWD=$OPTARG
+      ;;
+    s) SLUG=$OPTARG
+      ;;
+    r) RELEASE=$OPTARG
+      ;;
+    h ) usage
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+
+
+
+if hash pivnet 2>/dev/null; then
+  login
+  PRODUCTID=`pivnet product-files -p $SLUG -r $RELEASE --format=json | jq '.[] | select(.file_type =="Software").id'`
+  AWS_OBJECT_KEY=`pivnet product-files -p $SLUG -r $RELEASE --format=json | jq '.[] | select(.file_type =="Software").aws_object_key'`
+  OBJECT_KEY=${AWS_OBJECT_KEY##*/}
+  STRIPPED_OBJECT_KEY=${OBJECT_KEY%.*}
+  echo $STRIPPED_OBJECT_KEY
+  `pivnet download-product-files -p $SLUG -r $RELEASE -i $PRODUCTID --accept-eula`
+else
+  echo "Please install the latest pivnet cli as it could not be found."
+  exit 1
+fi
+
+if hash om-linux 2>/dev/null; then
+  om-upload
+else
+  echo "Please install the latest om-linux as it could not be found."
+  exit 1
+fi
