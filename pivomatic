@@ -1,13 +1,13 @@
 #!/bin/bash
 
-usage() { 
-  echo -e "Usage: 
-  $0 
-  -t <pivnet-token> 
-  -o <opsman-url> 
-  -u <opsman-user> 
-  -p <opsman-pass> 
-  -s <product-slug> 
+usage() {
+  echo -e "Usage:
+  $0
+  -t <pivnet-token>, PIVNET_TOKEN
+  -o <opsman-url>, OM_TARGET
+  -u <opsman-user>, OM_USERNAME
+  -p <opsman-pass>, OM_PASSWORD
+  -s <product-slug>
   -r <release>
   -i <id (optional)> \n" >&2; exit 1; }
 
@@ -45,7 +45,7 @@ summary() {
 download-pivnet() {
   JSON=`pivnet product-files -p $SLUG -r $RELEASE --format=json`
 
-  if [ -z "$PRODUCTID" ]; then 
+  if [ -z "$PRODUCTID" ]; then
     PRODUCTID=$(echo $JSON | jq '.[] | select(.file_type =="Software").id')
 
     if [[ $PRODUCTID = *[[:space:]]* ]]; then
@@ -61,7 +61,7 @@ download-pivnet() {
   pivnet download-product-files -p $SLUG -r $RELEASE -i $PRODUCTID --accept-eula
 
   AWS_OBJECT_KEY=$(echo $JSON | jq ".[] | select(.file_type ==\"Software\" and .id == ${PRODUCTID}).aws_object_key")
-  
+
   OBJECT_KEY=${AWS_OBJECT_KEY##*/}
   STRIPPED_OBJECT_KEY=${OBJECT_KEY%.*}
 }
@@ -99,6 +99,12 @@ while getopts ":t:o:u:p:s:r:i:h" opt; do
   esac
 done
 
+# subtitutes with variable env if parameters are not defined
+
+TOKEN=${TOKEN:-$PIVNET_TOKEN}
+OPSMAN=${OPSMAN:-$OM_TARGET}
+USER=${USER:-$OM_USERNAME}
+PASSWD=${PASSWD:-$OM_PASSWORD}
 
 checkcmds
 login
