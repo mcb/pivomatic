@@ -31,15 +31,15 @@ checkcmds () {
 }
 
 login (){
-  pivnet login --api-token="${TOKEN}"
+  pivnet login --api-token="${PIVNET_TOKEN}"
 }
 
 om-upload () {
-  om-linux -target $OPSMAN --skip-ssl-validation -u "${USER}" -p "${PASSWD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
+  om-linux -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
 }
 
 summary() {
-  om-linux  -target $OPSMAN --skip-ssl-validation -u "${USER}" -p "${PASSWD}" available-products
+  om-linux  -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" available-products
 }
 
 download-pivnet() {
@@ -73,13 +73,13 @@ fi
 
 while getopts ":t:o:u:p:s:r:i:h" opt; do
   case $opt in
-    t) TOKEN=$OPTARG
+    t) PIVNET_TOKEN=$OPTARG
       ;;
-    o) OPSMAN=$OPTARG
+    o) OM_TARGET=$OPTARG
       ;;
-    u) USER=$OPTARG
+    u) OM_USERNAME=$OPTARG
       ;;
-    p) PASSWD=$OPTARG
+    p) OM_PASSWORD=$OPTARG
       ;;
     s) SLUG=$OPTARG
       ;;
@@ -98,13 +98,6 @@ while getopts ":t:o:u:p:s:r:i:h" opt; do
       ;;
   esac
 done
-
-# subtitutes with variable env if parameters are not defined
-
-TOKEN=${TOKEN:-$PIVNET_TOKEN}
-OPSMAN=${OPSMAN:-$OM_TARGET}
-USER=${USER:-$OM_USERNAME}
-PASSWD=${PASSWD:-$OM_PASSWORD}
 
 checkcmds
 login
