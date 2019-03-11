@@ -23,10 +23,6 @@ After upload it will provide you with a summary of uploaded products on OpsManag
 - [om](https://github.com/pivotal-cf/om)
 - [jq](https://stedolan.github.io/jq/)
 
-## Known issues
-
-- Known to not work with non-linux OS
-
 ### Why BASH? No GOLANG?
 
 Was on the go while writing this and only had my iPad with me with access to that Jump Box. Served me well and will do the same for you.
