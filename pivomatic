@@ -39,7 +39,7 @@ om-upload () {
 }
 
 summary() {
-  om  -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" available-products
+  om -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" available-products
 }
 
 download-pivnet() {
@@ -64,6 +64,15 @@ download-pivnet() {
 
   OBJECT_KEY=${AWS_OBJECT_KEY##*/}
   STRIPPED_OBJECT_KEY=${OBJECT_KEY%.*}
+}
+
+check-slug() {
+  if [ -z "$SLUG" ]; then
+    echo "Here's a list of available products:"
+    pivnet products
+    echo "Please choose one and provide it using the -p flag, followed by the release number you wish to deploy."
+    exit 1
+  fi
 }
 
 if (($# == 0))
@@ -101,6 +110,7 @@ done
 
 checkcmds
 login
+check-slug
 download-pivnet
 om-upload
 summary
