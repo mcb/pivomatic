@@ -24,8 +24,8 @@ checkcmds () {
     exit 1
   fi
 
-  if ! hash om-linux 2>/dev/null; then
-    echo "Please install the latest om cli as it could not be found. Maybe not a Linux-User?"
+  if ! hash om 2>/dev/null; then
+    echo "Please install the latest om cli as it could not be found."
     exit 1
   fi
 }
@@ -35,11 +35,11 @@ login (){
 }
 
 om-upload () {
-  om-linux -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
+  om -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
 }
 
 summary() {
-  om-linux  -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" available-products
+  om  -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" available-products
 }
 
 download-pivnet() {
