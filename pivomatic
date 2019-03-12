@@ -7,8 +7,8 @@ usage() {
   -o <opsman-url>, OM_TARGET
   -u <opsman-user>, OM_USERNAME
   -p <opsman-pass>, OM_PASSWORD
-  -s <product-slug>
-  -r <release>
+  -s <product-slug (optional, will enter interactive mode if not provided)>
+  -r <release (optional, will enter interactive mode if not provided)>
   -i <id (optional)> \n" >&2; exit 1; }
 
 checkcmds () {
@@ -66,12 +66,39 @@ download-pivnet() {
   STRIPPED_OBJECT_KEY=${OBJECT_KEY%.*}
 }
 
-check-slug() {
+check-slug-release() {
   if [ -z "$SLUG" ]; then
     echo "Here's a list of available products:"
-    pivnet products
-    echo "Please choose one and provide it using the -p flag, followed by the release number you wish to deploy."
-    exit 1
+    echo
+    slugRetVal=$(pivnet products --format json)
+    echo $slugRetVal | jq -r '["NAME","SLUG"], ["----","----"], (.[] | [.name, .slug]) | @csv' | tr -d '"' | column -ts ","
+    echo
+    echo "=> Please choose one and provide the slug:"
+    read SLUG
+
+    checkSlug=$( echo $slugRetVal | jq "[.[] |.slug == \"${SLUG}\"] | any")
+
+    if ! $checkSlug ; then
+      echo "Sorry, could not find provided slug. Are you sure you spelled it correctly?"
+      exit 1
+    fi
+
+    echo
+    echo "✓ Will upload $SLUG"
+  fi
+
+  if [ -z "$RELEASE" ]; then
+    echo "Searching for available releases..."
+    releaseRetVal=$(pivnet releases -p $SLUG --format json)
+
+    echo "Here's what I found on network.pivotal.io:"
+    echo
+    echo $releaseRetVal | jq -r '["VERSION","DESCRIPTION"], ["-------","-----------"], (.[] | [.version, .description]) | @csv' | tr -d '"' | column -ts ","
+    echo
+    echo "=> Please choose one and provide the version:"
+    read RELEASE
+    echo
+    echo "✓ Will upload $SLUG with release $RELEASE."
   fi
 }
 
@@ -110,7 +137,7 @@ done
 
 checkcmds
 login
-check-slug
+check-slug-release
 download-pivnet
 om-upload
 summary
