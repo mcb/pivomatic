@@ -66,7 +66,7 @@ download-pivnet() {
   STRIPPED_OBJECT_KEY=${OBJECT_KEY%.*}
 }
 
-check-slug() {
+check-slug-release() {
   if [ -z "$SLUG" ]; then
     echo "Here's a list of available products:"
     echo
@@ -137,7 +137,7 @@ done
 
 checkcmds
 login
-check-slug
+check-slug-release
 download-pivnet
 om-upload
 summary
