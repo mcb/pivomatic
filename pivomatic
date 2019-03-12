@@ -75,6 +75,14 @@ check-slug() {
     echo
     echo "=> Please choose one and provide the slug:"
     read SLUG
+
+    checkSlug=$( echo $slugRetVal | jq "[.[] |.slug == \"${SLUG}\"] | any")
+
+    if ! $checkSlug ; then
+      echo "Sorry, could not find provided slug. Are you sure you spelled it correctly?"
+      exit 1
+    fi
+
     echo
     echo "✓ Will upload $SLUG"
   fi
@@ -82,6 +90,7 @@ check-slug() {
   if [ -z "$RELEASE" ]; then
     echo "Searching for available releases..."
     releaseRetVal=$(pivnet releases -p $SLUG --format json)
+
     echo "Here's what I found on network.pivotal.io:"
     echo
     echo $releaseRetVal | jq -r '["VERSION","DESCRIPTION"], ["-------","-----------"], (.[] | [.version, .description]) | @csv' | tr -d '"' | column -ts ","
@@ -90,7 +99,6 @@ check-slug() {
     read RELEASE
     echo
     echo "✓ Will upload $SLUG with release $RELEASE."
-    exit 1
   fi
 }
 
