@@ -69,21 +69,27 @@ download-pivnet() {
 check-slug() {
   if [ -z "$SLUG" ]; then
     echo "Here's a list of available products:"
+    echo
     slugRetVal=$(pivnet products --format json)
     echo $slugRetVal | jq -r '["NAME","SLUG"], ["----","----"], (.[] | [.name, .slug]) | @csv' | tr -d '"' | column -ts ","
-    echo "Please choose one and provide the slug:"
+    echo
+    echo "=> Please choose one and provide the slug:"
     read SLUG
-    echo "Will upload $SLUG"
+    echo
+    echo "✓ Will upload $SLUG"
   fi
 
   if [ -z "$RELEASE" ]; then
-    echo "Searching for available releases:"
+    echo "Searching for available releases..."
     releaseRetVal=$(pivnet releases -p $SLUG --format json)
     echo "Here's what I found on network.pivotal.io:"
+    echo
     echo $releaseRetVal | jq -r '["VERSION","DESCRIPTION"], ["-------","-----------"], (.[] | [.version, .description]) | @csv' | tr -d '"' | column -ts ","
-    echo "Please choose one and provide the version:"
+    echo
+    echo "=> Please choose one and provide the version:"
     read RELEASE
-    echo "Will upload $SLUG with release $RELEASE."
+    echo
+    echo "✓ Will upload $SLUG with release $RELEASE."
     exit 1
   fi
 }
