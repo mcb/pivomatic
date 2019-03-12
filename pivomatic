@@ -69,20 +69,21 @@ download-pivnet() {
 check-slug() {
   if [ -z "$SLUG" ]; then
     echo "Here's a list of available products:"
-    pivnet products
-    echo "Please choose one and provide the id:"
-    read SLUGID
-    SLUG=$(pivnet products --format json | jq ".[] | select(.id == ${SLUGID}).slug")
-    echo "Chose $SLUG"
+    slugRetVal=$(pivnet products --format json)
+    echo $slugRetVal | jq -r '["NAME","SLUG"], ["----","----"], (.[] | [.name, .slug]) | @csv' | tr -d '"' | column -ts ","
+    echo "Please choose one and provide the slug:"
+    read SLUG
+    echo "Will upload $SLUG"
   fi
 
   if [ -z "$RELEASE" ]; then
-    echo "Here's a list of available releases:"
-    pivnet releases -p $SLUG
-    echo "Please choose one and provide the id:"
-    read RELEASEID
-    RELEASE=$(pivnet releases -p $SLUG --format json | jq ".[] | select(.id == ${RELEASEID}).version")
-    echo "Chose $RELEASE"
+    echo "Searching for available releases:"
+    releaseRetVal=$(pivnet releases -p $SLUG --format json)
+    echo "Here's what I found on network.pivotal.io:"
+    echo $releaseRetVal | jq -r '["VERSION","DESCRIPTION"], ["-------","-----------"], (.[] | [.version, .description]) | @csv' | tr -d '"' | column -ts ","
+    echo "Please choose one and provide the version:"
+    read RELEASE
+    echo "Will upload $SLUG with release $RELEASE."
     exit 1
   fi
 }
