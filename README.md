@@ -4,7 +4,7 @@ Note: Sometimes the Pivnet Api (network.pivotal.io) returns multiple files marke
 
 Pivomatic uses default [om](https://github.com/pivotal-cf/om) environment variables and you can use the same in `pivomatic` as suggested by the usage below.
 
-```bash
+```
 Usage: pivomatic
         -t <pivnet-token>, PIVNET_TOKEN
         -o <opsman-url>, OM_TARGET
