@@ -7,8 +7,8 @@ usage() {
   -o <opsman-url>, OM_TARGET
   -u <opsman-user>, OM_USERNAME
   -p <opsman-pass>, OM_PASSWORD
-  -s <product-slug>
-  -r <release>
+  -s <product-slug (optional, will enter interactive mode if not provided)>
+  -r <release (optional, will enter interactive mode if not provided)>
   -i <id (optional)> \n" >&2; exit 1; }
 
 checkcmds () {
