@@ -35,7 +35,11 @@ login (){
 }
 
 om-upload () {
-  om -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
+  if [[ $SLUG == *"stemcell"* ]]; then
+    om -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" upload-stemcell --stemcell "${STRIPPED_OBJECT_KEY}".tgz
+  else
+    om -target $OM_TARGET --skip-ssl-validation -u "${OM_USERNAME}" -p "${OM_PASSWORD}" upload-product --product "${STRIPPED_OBJECT_KEY}".pivotal
+  fi
 }
 
 summary() {
