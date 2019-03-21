@@ -106,11 +106,6 @@ check-slug-release() {
   fi
 }
 
-if (($# == 0))
-then
-  usage
-fi
-
 while getopts ":t:o:u:p:s:r:i:h" opt; do
   case $opt in
     t) PIVNET_TOKEN=$OPTARG
@@ -138,6 +133,11 @@ while getopts ":t:o:u:p:s:r:i:h" opt; do
       ;;
   esac
 done
+
+if [ -z "$PIVNET_TOKEN" ] || [ -z "$OM_TARGET" ] || [ -z "$OM_USERNAME" ] || [ -z "$OM_PASSWORD" ]; then
+  usage
+  exit 1
+fi
 
 checkcmds
 login
