@@ -22,6 +22,7 @@ After upload it will provide you with a summary of uploaded products on OpsManag
 - [pivnet-cli](https://github.com/pivotal-cf/pivnet-cli)
 - [om](https://github.com/pivotal-cf/om)
 - [jq](https://stedolan.github.io/jq/)
+- `column` command line tool. As pointed out by @portepa it might be containted in the 'bsdmainutils' package.
 
 ### Why BASH? No GOLANG?
 
