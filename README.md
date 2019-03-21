@@ -4,24 +4,57 @@ Note: Sometimes the Pivnet Api (network.pivotal.io) returns multiple files marke
 
 Pivomatic uses default [om](https://github.com/pivotal-cf/om) environment variables and you can use the same in `pivomatic` as suggested by the usage below.
 
-```bash
+```
 Usage: pivomatic
         -t <pivnet-token>, PIVNET_TOKEN
         -o <opsman-url>, OM_TARGET
         -u <opsman-user>, OM_USERNAME
         -p <opsman-pass>, OM_PASSWORD
-        -s <product-slug>
-        -r <release>
+        -s <product-slug (optional, will enter interactive mode if not provided)>
+        -r <release (optional, will enter interactive mode if not provided)>
         -i <id (optional)>
 ```
 
 After upload it will provide you with a summary of uploaded products on OpsManager.
+
+## Interactive Mode
+
+Pivomatic has been extended to enter interactive mode if no product-slug nor release have been passed. It will present you with a list of possible options for both slug and release:
+
+```
+$ ./pivomatic -t <token>
+Checking for installed scripts
+Logged-in successfully
+Here's a list of available products:
+
+NAME                                                      SLUG
+----                                                      ----
+MySQL for PCF                                             pivotal-mysql
+Pivotal Application Service (formerly Elastic Runtime)    elastic-runtime
+
+=> Please choose one and provide the slug:
+pivotal-mysql
+
+✓ Will upload pivotal-mysql
+Searching for available releases...
+Here's what I found on network.pivotal.io:
+
+VERSION                  DESCRIPTION
+-------                  -----------
+2.5.3                    MySQL for PCF v2.5.3. It provides on-demand single node
+
+=> Please choose one and provide the version:
+2.5.3
+```
+
+Once all options are satisfied, `pivomatic` will upload as if you passed these params along the initial command.
 
 ## Requirements
 
 - [pivnet-cli](https://github.com/pivotal-cf/pivnet-cli)
 - [om](https://github.com/pivotal-cf/om)
 - [jq](https://stedolan.github.io/jq/)
+- `column` command line tool. As pointed out by @portepa it might be containted in the `bsdmainutils` package.
 
 ### Why BASH? No GOLANG?
 

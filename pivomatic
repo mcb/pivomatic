@@ -54,14 +54,18 @@ download-pivnet() {
 
     if [[ $PRODUCTID = *[[:space:]]* ]]; then
       echo "Sorry, found multiple IDs for ${SLUG}."
-      echo $PRODUCTID
-      echo "Consult"
-      echo "  pivnet product-files -p ${SLUG} -r ${RELEASE}"
-      echo "Please choose one and provide it using the -i flag."
-      exit 1
+      echo
+      idRetVal=$(pivnet product-files -p $SLUG -r $RELEASE --format json)
+      echo $idRetVal | jq -r '["ID","NAME","VERSION"], ["--","----","-------"], (.[] | [.id, .name, .file_version]) | @csv' | tr -d '"' | column -ts ","
+      echo
+      echo "=> Please choose one and provide the id:"
+      read PRODUCTID
     fi
   fi
 
+  echo
+  echo "✓ Will download $SLUG with release $RELEASE ($PRODUCTID)."
+  
   pivnet download-product-files -p $SLUG -r $RELEASE -i $PRODUCTID --accept-eula
 
   AWS_OBJECT_KEY=$(echo $JSON | jq ".[] | select(.file_type ==\"Software\" and .id == ${PRODUCTID}).aws_object_key")
@@ -106,11 +110,6 @@ check-slug-release() {
   fi
 }
 
-if (($# == 0))
-then
-  usage
-fi
-
 while getopts ":t:o:u:p:s:r:i:h" opt; do
   case $opt in
     t) PIVNET_TOKEN=$OPTARG
@@ -138,6 +137,11 @@ while getopts ":t:o:u:p:s:r:i:h" opt; do
       ;;
   esac
 done
+
+if [ -z "$PIVNET_TOKEN" ] || [ -z "$OM_TARGET" ] || [ -z "$OM_USERNAME" ] || [ -z "$OM_PASSWORD" ]; then
+  usage
+  exit 1
+fi
 
 checkcmds
 login
