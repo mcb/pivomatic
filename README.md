@@ -1,6 +1,5 @@
 # pivomatic
 Bash Script to wrap around Pivnet CLI and OM. This script downloads and uploads with a single command. Intended to be used on a Jump Server for easy internet access.
-Note: Sometimes the Pivnet Api (network.pivotal.io) returns multiple files marked as software, in this case the process is stopped and the id needs to be provided with a flag.
 
 Pivomatic uses default [om](https://github.com/pivotal-cf/om) environment variables and you can use the same in `pivomatic` as suggested by the usage below.
 
